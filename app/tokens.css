@@ -1,0 +1,152 @@
+/* ==========================================================================
+   Design Tokens — Minimal, Reusable Foundation
+   App: Wardrobe Pre-Move Cataloguing (Mobile-First)
+   ========================================================================== */
+
+:root {
+  /* Color Palette — Natural, Calm, Linen & Charcoal Palette */
+  --color-bg-base: #fbfaf8;
+  --color-bg-surface: #ffffff;
+  --color-bg-subtle: #f4f2ee;
+  --color-bg-elevated: #ffffff;
+
+  --color-text-primary: #191817;
+  --color-text-secondary: #5e5c58;
+  --color-text-muted: #716e69;
+  --color-text-inverse: #ffffff;
+
+  --color-border-subtle: #e8e5df;
+  --color-border-default: #d6d2ca;
+  --color-border-focus: #191817;
+
+  /* Interactive Controls */
+  --color-primary-bg: #191817;
+  --color-primary-fg: #fbfaf8;
+  --color-primary-hover: #32302e;
+  --color-primary-active: #000000;
+
+  --color-secondary-bg: #f4f2ee;
+  --color-secondary-fg: #191817;
+  --color-secondary-border: #d6d2ca;
+  --color-secondary-hover: #eae7e1;
+
+  /* Focus Outline (High-contrast, accessible) */
+  --color-focus-ring: #0250bb;
+  --color-focus-ring-offset: #fbfaf8;
+
+  /* Status: Error (Shape + Color encoding) */
+  --color-error-bg: #fff5f5;
+  --color-error-border: #feb2b2;
+  --color-error-text: #9b2c2c;
+  --color-error-icon: #c53030;
+
+  /* Status: Success / Sent (Shape + Color encoding) */
+  --color-success-bg: #f0fdf4;
+  --color-success-border: #bbf7d0;
+  --color-success-text: #166534;
+  --color-success-icon: #15803d;
+
+  /* Typography */
+  --font-family-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-family-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  --font-size-xs: 0.75rem;    /* 12px */
+  --font-size-sm: 0.875rem;   /* 14px */
+  --font-size-base: 1rem;     /* 16px (Mobile Safari default to avoid auto-zoom) */
+  --font-size-lg: 1.125rem;   /* 18px */
+  --font-size-xl: 1.25rem;    /* 20px */
+  --font-size-2xl: 1.5rem;    /* 24px */
+
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.625;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+
+  /* Spacing Scale */
+  --space-1: 0.25rem;  /* 4px */
+  --space-2: 0.5rem;   /* 8px */
+  --space-3: 0.75rem;  /* 12px */
+  --space-4: 1rem;     /* 16px */
+  --space-5: 1.25rem;  /* 20px */
+  --space-6: 1.5rem;   /* 24px */
+  --space-8: 2rem;     /* 32px */
+  --space-10: 2.5rem;  /* 40px */
+  --space-12: 3rem;    /* 48px */
+  --space-16: 4rem;    /* 64px */
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+
+  /* Minimum Touch Target (WCAG 2.1 Level AAA & Project Mandate) */
+  --touch-target-min: 48px;
+
+  /* Shadows */
+  --shadow-subtle: 0 1px 2px rgba(25, 24, 23, 0.04), 0 2px 6px rgba(25, 24, 23, 0.04);
+  --shadow-card: 0 1px 3px rgba(25, 24, 23, 0.05), 0 8px 24px rgba(25, 24, 23, 0.06);
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 250ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Dark Mode via prefers-color-scheme */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg-base: #121213;
+    --color-bg-surface: #1c1c1e;
+    --color-bg-subtle: #242426;
+    --color-bg-elevated: #28282b;
+
+    --color-text-primary: #f4f3ef;
+    --color-text-secondary: #a3a19b;
+    --color-text-muted: #8c8a85;
+    --color-text-inverse: #121213;
+
+    --color-border-subtle: #2a2928;
+    --color-border-default: #3d3b38;
+    --color-border-focus: #f4f3ef;
+
+    --color-primary-bg: #f4f3ef;
+    --color-primary-fg: #121213;
+    --color-primary-hover: #ffffff;
+    --color-primary-active: #d6d4ce;
+
+    --color-secondary-bg: #242426;
+    --color-secondary-fg: #f4f3ef;
+    --color-secondary-border: #3d3b38;
+    --color-secondary-hover: #2d2d30;
+
+    --color-focus-ring: #60a5fa;
+    --color-focus-ring-offset: #121213;
+
+    --color-error-bg: #271414;
+    --color-error-border: #742a2a;
+    --color-error-text: #fca5a5;
+    --color-error-icon: #f87171;
+
+    --color-success-bg: #0f2316;
+    --color-success-border: #1e532d;
+    --color-success-text: #86efac;
+    --color-success-icon: #4ade80;
+
+    --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.2);
+    --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.35);
+  }
+}
+
+/* Global base baseline */
+html, body {
+  background-color: var(--color-bg-base);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-sans);
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
