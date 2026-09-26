@@ -12,8 +12,15 @@
 `DELETE` отозваны. Колоночный грант на `INSERT` не включает `id` и `created_at` —
 клиентские часы до порядка событий не дотянутся.
 
-**Пути валидирует триггер:** `{owner_id}/items/{item_id}/photo.webp`. Бакет
-приватный, `upsert: false`.
+**Пути валидирует триггер:** `{owner_id}/items/{item_id}/photo.webp` и
+`{owner_id}/floor-maps/{revision_id}/photo.webp`. Бакет приватный; upsert и
+удаление невозможны, потому что политик на UPDATE и DELETE нет (см. D12 —
+гранты здесь ничего не решают). Прямой DELETE дополнительно отбивает
+storage-триггер `protect_delete`.
+
+**FK вещи на зону — `on delete set null (zone_id)`** (список колонок, Postgres
+15+). Без списка Postgres занулял бы и `owner_id`, который `not null`, и удаление
+зоны падало бы.
 
 **Одна активная карта** — partial unique index по
 `(owner_id) where retired_at is null`. Замена фото ретаит ревизию и обнуляет

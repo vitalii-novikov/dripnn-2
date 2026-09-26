@@ -34,12 +34,28 @@ pgTAP и per-role integration — отдельные джобы CI, не зас�
 ## Команды
 
 ```bash
-supabase db reset          # миграции с нуля
-npm run test               # unit + coverage
-npm run test:db            # pgTAP
-npm run test:integration   # три роли
-npm run test:e2e           # chromium + mobile WebKit
-npm run build
+npm ci                     # только npm ci, не npm install (см. ниже)
+npm run e2e:install        # браузеры Playwright, один раз на машину
+npm exec -- supabase start # локальный стек, нужен Docker
+npm run verify             # весь конвейер целиком
 ```
 
-Появятся на Этапе 0 — актуализируй список тогда же.
+Отдельными шагами:
+
+```bash
+npm run lint
+npm run typecheck
+npm run test               # unit + покрытие, порог 80%
+npm run db:reset           # миграции с нуля
+npm run test:db            # pgTAP под тремя ролями
+npm run verify:types       # типы БД не разошлись со схемой
+npm run test:integration   # три роли через PostgREST и Storage
+npm run build
+npm run test:e2e           # chromium + mobile WebKit
+```
+
+**Ставь зависимости через `npm ci`.** Инкрементальный `npm install` теряет
+платформенную optional-зависимость нативного биндинга (баг npm #4828) — vitest
+падает с «Cannot find native binding». Лечится удалением `node_modules` и
+`package-lock.json`. После любого `npm install` перепрогоняй тесты: предыдущий
+зелёный прогон уже ничего не гарантирует.
