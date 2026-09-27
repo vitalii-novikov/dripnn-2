@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Гардероб</title>
+  <link rel="icon" href="data:,">
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f4f4f6;
+      --surface: #ffffff;
+      --surface-2: #ececf0;
+      --text: #16161a;
+      --muted: #6b6b76;
+      --border: rgba(20, 20, 30, 0.08);
+      --accent: #2f5bea;
+      --danger: #d92d20;
+      --shadow: 0 1px 2px rgba(16, 16, 24, 0.06), 0 6px 20px rgba(16, 16, 24, 0.06);
+      --radius: 18px;
+      --radius-sm: 12px;
+
+      --tier-S: #f5a524;
+      --tier-A: #17a672;
+      --tier-B: #3b7bf6;
+      --tier-C: #8b5cf6;
+      --tier-D: #e5484d;
+      --tier-E: #7c4a2d;
+      --tier-none: #71717a;
+      --on-tier: #ffffff;
+      --on-tier-S: #1a1200;
+
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Inter, system-ui, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0c0c10;
+        --surface: #17171d;
+        --surface-2: #23232b;
+        --text: #f2f2f5;
+        --muted: #9a9aa6;
+        --border: rgba(255, 255, 255, 0.08);
+        --accent: #6d8dff;
+        --danger: #ff6b61;
+        --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+        --tier-none: #5f5f6a;
+      }
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.4;
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+      min-height: 100vh;
+      min-height: 100dvh;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font: inherit;
+      color: inherit;
+      border: 0;
+      background: none;
+      cursor: pointer;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .page {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: calc(8px + var(--safe-top)) 16px calc(32px + var(--safe-bottom));
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Header */
+    .app-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 52px;
+    }
+    .header-title {
+      flex: 1;
+      min-width: 0;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .header-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 0 16px;
+      border-radius: 999px;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: transform 0.12s ease, opacity 0.12s ease;
+    }
+    .btn:active {
+      transform: scale(0.97);
+    }
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: default;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn-ghost {
+      background: var(--surface-2);
+    }
+    .btn-icon {
+      width: 44px;
+      padding: 0;
+      font-size: 28px;
+      line-height: 1;
+    }
+    .btn-danger {
+      background: rgba(217, 45, 32, 0.12);
+      background: color-mix(in srgb, var(--danger) 12%, transparent);
+      color: var(--danger);
+    }
+    .btn-block {
+      width: 100%;
+    }
+
+    /* Summary */
+    .summary {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .summary-total {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .tier-bar {
+      display: flex;
+      gap: 2px;
+      height: 10px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: var(--surface-2);
+    }
+    .tier-bar-thin {
+      height: 4px;
+      gap: 1px;
+    }
+    .tier-seg {
+      min-width: 3px;
+    }
+    .tier-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 14px;
+      padding: 0;
+      list-style: none;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .tier-legend b {
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
+    .legend-zero {
+      opacity: 0.5;
+    }
+    .legend-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 5px;
+    }
+
+    .tier-S { background: var(--tier-S); }
+    .tier-A { background: var(--tier-A); }
+    .tier-B { background: var(--tier-B); }
+    .tier-C { background: var(--tier-C); }
+    .tier-D { background: var(--tier-D); }
+    .tier-E { background: var(--tier-E); }
+    .tier-none { background: var(--tier-none); }
+
+    .notice {
+      font-size: 13px;
+      color: var(--muted);
+      background: var(--surface-2);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+    }
+
+    /* 3×3 grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .tile {
+      position: relative;
+      aspect-ratio: 1;
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 10px 10px 12px;
+      color: #fff;
+      transition: transform 0.15s ease;
+    }
+    .tile:active {
+      transform: scale(0.97);
+    }
+    .tile::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.1) 55%, transparent);
+    }
+    .tile > * {
+      position: relative;
+      z-index: 1;
+    }
+    .tile-photo {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+    .tile-name {
+      font-weight: 650;
+      font-size: 14px;
+      line-height: 1.2;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .tile-count {
+      font-size: 12px;
+      opacity: 0.85;
+      margin-top: 2px;
+    }
+    .tile .tier-bar {
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      bottom: 6px;
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.25);
+    }
+    .tile-empty {
+      background: transparent;
+      box-shadow: none;
+      border: 1.5px dashed rgba(107, 107, 118, 0.4);
+      color: var(--text);
+      justify-content: center;
+      text-align: center;
+    }
+    .tile-empty::after {
+      display: none;
+    }
+    .tile-empty .tile-count {
+      color: var(--muted);
+    }
+    .tile-name-muted {
+      opacity: 0.6;
+    }
+
+    .unsorted {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      min-height: 48px;
+      padding: 0 16px;
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      font-weight: 600;
+    }
+    .unsorted span:last-child {
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    /* Block items */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    @media (min-width: 600px) {
+      .cards {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    .card {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      text-align: left;
+      min-width: 0;
+    }
+    .card-photo-wrap {
+      position: relative;
+      display: block;
+      aspect-ratio: 1;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      background: var(--surface-2);
+    }
+    .card-photo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .card:active .card-photo-wrap {
+      transform: scale(0.98);
+    }
+    .card-name {
+      font-size: 13px;
+      font-weight: 550;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      padding: 0 2px;
+    }
+    .card-name-muted {
+      color: var(--muted);
+      font-weight: 400;
+    }
+    .tier-pill {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      min-width: 28px;
+      height: 28px;
+      padding: 0 8px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      font-weight: 750;
+      color: var(--on-tier);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+    }
+    .tier-pill.tier-S,
+    .tier-btn.tier-S {
+      color: var(--on-tier-S);
+    }
+    .empty {
+      color: var(--muted);
+      text-align: center;
+      padding: 48px 16px;
+    }
+
+    .photo-missing {
+      background: var(--surface-2)
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239a9aa6' stroke-width='1.5'%3E%3Crect x='3' y='3' width='18' height='18' rx='4'/%3E%3Ccircle cx='8.5' cy='8.5' r='1.5'/%3E%3Cpath d='m21 15-5-5L5 21'/%3E%3C/svg%3E")
+        center / 32px no-repeat;
+    }
+
+    /* Bottom sheet */
+    .sheet-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      background: rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      animation: fade 0.18s ease;
+    }
+    .sheet {
+      width: 100%;
+      max-width: 520px;
+      max-height: 92vh;
+      max-height: 92dvh;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      background: var(--surface);
+      border-radius: 24px 24px 0 0;
+      padding: 8px 16px calc(20px + var(--safe-bottom));
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      animation: rise 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
+      outline: none;
+    }
+    @media (min-width: 600px) {
+      .sheet-backdrop {
+        align-items: center;
+      }
+      .sheet {
+        border-radius: 24px;
+      }
+    }
+    .sheet-handle {
+      width: 36px;
+      height: 5px;
+      border-radius: 999px;
+      background: var(--surface-2);
+      align-self: center;
+    }
+    .sheet-photo {
+      width: 100%;
+      max-height: 52vh;
+      max-height: 52dvh;
+      aspect-ratio: 1;
+      object-fit: cover;
+      border-radius: var(--radius);
+      display: block;
+    }
+    .sheet-title {
+      font-size: 18px;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+    }
+    .sheet-open {
+      overflow: hidden;
+    }
+    .sheet-meta {
+      display: flex;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .tier-row {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+    }
+    .tier-btn {
+      height: 52px;
+      border-radius: 14px;
+      font-size: 18px;
+      font-weight: 750;
+      color: var(--on-tier);
+      transition: transform 0.12s ease;
+    }
+    .tier-btn[aria-pressed='true'] {
+      box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px var(--text);
+    }
+    .tier-btn:active {
+      transform: scale(0.94);
+    }
+
+    /* Rename */
+    .rename {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .hint {
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .rename-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    @media (min-width: 600px) {
+      .rename-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    .rename-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .rename-cell span {
+      width: 20px;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+    }
+    .field {
+      flex: 1;
+      min-width: 0;
+      height: 44px;
+      padding: 0 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      font: inherit;
+      font-size: 16px;
+    }
+    .form-error {
+      color: var(--danger);
+      font-size: 14px;
+    }
+    .form-error:empty {
+      display: none;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      z-index: 30;
+      left: 50%;
+      bottom: calc(20px + var(--safe-bottom));
+      transform: translateX(-50%);
+      max-width: calc(100% - 32px);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 10px 10px 16px;
+      border-radius: 999px;
+      background: #1f1f25;
+      color: #fff;
+      box-shadow: var(--shadow);
+      animation: rise 0.2s ease;
+    }
+    .toast-error {
+      background: var(--danger);
+      border-radius: var(--radius-sm);
+    }
+    .toast-action {
+      min-height: 44px;
+      padding: 0 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.16);
+      font-weight: 650;
+    }
+
+    /* Loading and errors */
+    .skeleton {
+      background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface) 50%, var(--surface-2) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.2s linear infinite;
+      box-shadow: none;
+    }
+    .summary.skeleton {
+      height: 104px;
+    }
+    .error-screen {
+      min-height: 80vh;
+      min-height: 80dvh;
+      justify-content: center;
+      text-align: center;
+      align-items: center;
+    }
+    .error-screen .header-title {
+      white-space: normal;
+      font-size: 22px;
+    }
+
+    @keyframes shimmer {
+      to {
+        background-position: -200% 0;
+      }
+    }
+    @keyframes rise {
+      from {
+        transform: translateY(16px);
+        opacity: 0;
+      }
+    }
+    .toast {
+      animation-name: toast-in;
+    }
+    @keyframes toast-in {
+      from {
+        opacity: 0;
+        transform: translate(-50%, 12px);
+      }
+    }
+    @keyframes fade {
+      from {
+        opacity: 0;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    'use strict';
+
+    const TIERS = ['S', 'A', 'B', 'C', 'D', 'E'];
+    const SLOTS = 9;
+    const MAX_NAME = 80;
+    const UNSORTED = 0; // маршрут #/block/0 — вещи, чей ответ «Блок» не совпал ни с одним блоком
+    const RPC_TIMEOUT_MS = 15000;
+    const UNDO_MS = 6000;
+
+    // ─────────────────────────── Сервер ───────────────────────────
+
+    /**
+     * google.script.run может не вызвать ни один обработчик (например, браузер вошёл в
+     * несколько Google-аккаунтов), поэтому у каждого вызова есть срок; поздние ответы игнорируются.
+     */
+    function call(name, arg) {
+      return new Promise((resolve, reject) => {
+        if (typeof google === 'undefined' || !google.script) {
+          reject(new Error('google.script.run недоступен — откройте страницу по ссылке /exec'));
+          return;
+        }
+        let settled = false;
+        const settle = (fn) => {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timer);
+          fn();
+        };
+        const timer = setTimeout(() => settle(() => reject(new Error('Сервер не ответил за 15 секунд'))), RPC_TIMEOUT_MS);
+        const runner = google.script.run
+          .withSuccessHandler((res) =>
+            settle(() => {
+              if (!res || typeof res.ok !== 'boolean') reject(new Error('Некорректный ответ сервера (' + name + ')'));
+              else if (res.ok) resolve(res.data);
+              else reject(new Error(res.error));
+            }),
+          )
+          .withFailureHandler((err) => settle(() => reject(err instanceof Error ? err : new Error(String(err)))));
+        if (arg === undefined) runner[name]();
+        else runner[name](arg);
+      });
+    }
+
+    // ─────────────────────────── Данные ───────────────────────────
+
+    const rank = (tier) => (tier === null ? TIERS.length : TIERS.indexOf(tier));
+
+    function itemsInSlot(items, slot) {
+      return items.filter((i) => (slot === UNSORTED ? i.slot === null : i.slot === slot));
+    }
+
+    /** Лучший тир первым, затем новые — порядок в блоке и обложка плитки. */
+    function sortItems(items) {
+      return items.slice().sort((a, b) => rank(a.tier) - rank(b.tier) || b.addedAt.localeCompare(a.addedAt));
+    }
+
+    function summarize(items) {
+      const byTier = {};
+      TIERS.forEach((t) => (byTier[t] = 0));
+      let unrated = 0;
+      items.forEach((i) => (i.tier === null ? (unrated += 1) : (byTier[i.tier] += 1)));
+      return { total: items.length, unrated: unrated, byTier: byTier };
+    }
+
+    function blockName(data, slot) {
+      if (slot === UNSORTED) return 'Без блока';
+      const block = data.blocks.find((b) => b.slot === slot);
+      return (block && block.name) || 'Блок ' + slot;
+    }
+
+    function addUrl(formUrl, entry, block) {
+      if (!formUrl) return null;
+      if (!entry || !block) return formUrl;
+      return formUrl + (formUrl.indexOf('?') >= 0 ? '&' : '?') + 'usp=pp_url&entry.' + entry + '=' + encodeURIComponent(block);
+    }
+
+    function thumbUrl(id, size) {
+      return 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(id) + '&sz=w' + size;
+    }
+
+    function countLabel(n) {
+      const m10 = n % 10;
+      const m100 = n % 100;
+      const word = m10 === 1 && m100 !== 11 ? 'вещь' : m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14) ? 'вещи' : 'вещей';
+      return n + ' ' + word;
+    }
+
+    function formatDate(iso) {
+      const d = new Date(iso);
+      return isNaN(d.getTime()) ? '' : d.toLocaleDateString('ru-RU');
+    }
+
+    // ─────────────────────────── DOM ───────────────────────────
+
+    /** Текст всегда вставляется текстовыми узлами — названия никогда не попадают в innerHTML. */
+    function h(tag, attrs, ...children) {
+      const el = document.createElement(tag);
+      Object.entries(attrs || {}).forEach(([key, value]) => {
+        if (value === undefined || value === false || value === null) return;
+        if (key.startsWith('on') && typeof value === 'function') el.addEventListener(key.slice(2), value);
+        else el.setAttribute(key, value === true ? '' : String(value));
+      });
+      children.forEach((c) => c !== null && c !== undefined && c !== false && el.append(c));
+      return el;
+    }
+
+    function header(title, back, ...actions) {
+      return h(
+        'header',
+        { class: 'app-header' },
+        back ? h('a', { href: back, class: 'btn btn-ghost btn-icon', 'aria-label': 'Назад' }, '‹') : null,
+        h('h1', { class: 'header-title' }, title),
+        h('div', { class: 'header-actions' }, ...actions),
+      );
+    }
+
+    function toast(text, kind, action, durationMs) {
+      kind = kind || 'info';
+      const old = document.querySelector('.toast');
+      if (old) old.remove();
+      const el = h('div', { class: 'toast toast-' + kind, role: kind === 'error' ? 'alert' : 'status' }, h('span', {}, text));
+      const timer = setTimeout(() => el.remove(), durationMs || (kind === 'error' ? 6000 : 2500));
+      if (action) {
+        el.append(
+          h('button', { type: 'button', class: 'toast-action', onclick: () => (clearTimeout(timer), el.remove(), action.run()) }, action.label),
+        );
+      }
+      document.body.append(el);
+    }
+
+    function tierPill(tier) {
+      return h('span', { class: 'tier-pill tier-' + (tier || 'none'), 'aria-label': tier ? 'Тир ' + tier : 'Без тира' }, tier || '—');
+    }
+
+    function tierBar(summary, thin) {
+      const bar = h('div', { class: thin ? 'tier-bar tier-bar-thin' : 'tier-bar', 'aria-hidden': 'true' });
+      TIERS.map((t) => [t, summary.byTier[t]])
+        .concat([['none', summary.unrated]])
+        .forEach(([key, count]) => count > 0 && bar.append(h('span', { class: 'tier-seg tier-' + key, style: 'flex-grow:' + count })));
+      return bar;
+    }
+
+    function tierLegend(summary) {
+      const entries = TIERS.map((t) => [t, t, summary.byTier[t]]).concat([['none', 'без тира', summary.unrated]]);
+      return h(
+        'ul',
+        { class: 'tier-legend' },
+        ...entries.map(([key, label, count]) =>
+          h('li', { class: count === 0 ? 'legend-zero' : '' }, h('span', { class: 'legend-dot tier-' + key }), label + ' ', h('b', {}, String(count))),
+        ),
+      );
+    }
+
+    function summaryCard(items, label, ...extra) {
+      const s = summarize(items);
+      return h('section', { class: 'summary', 'aria-label': label }, h('p', { class: 'summary-total' }, countLabel(s.total)), tierBar(s), tierLegend(s), ...extra);
+    }
+
+    /** Миниатюра Drive может не загрузиться (доступ ещё не открыт) — тогда нейтральная заглушка. */
+    function photo(src, alt, className) {
+      const img = h('img', { src: src, alt: alt, class: className, loading: 'lazy', decoding: 'async' });
+      const fallback = alt ? { role: 'img', 'aria-label': alt } : { 'aria-hidden': 'true' };
+      img.addEventListener('error', () => img.replaceWith(h('div', Object.assign({ class: className + ' photo-missing' }, fallback))));
+      return img;
+    }
+
+    // ─────────────────────────── Нижняя шторка ───────────────────────────
+
+    let closeCurrentSheet = null;
+
+    function closeSheet() {
+      if (closeCurrentSheet) closeCurrentSheet();
+    }
+
+    /** Одна шторка за раз; закрывается по фону, Escape или смене экрана и возвращает фокус. */
+    function openSheet(label, ...content) {
+      closeSheet();
+      const opener = document.activeElement;
+      const panel = h('div', { class: 'sheet', role: 'dialog', 'aria-modal': 'true', 'aria-label': label, tabindex: '-1' }, h('div', { class: 'sheet-handle', 'aria-hidden': 'true' }), ...content);
+      const backdrop = h('div', { class: 'sheet-backdrop' }, panel);
+      const onKey = (e) => {
+        if (e.key === 'Escape') closeSheet();
+        if (e.key !== 'Tab') return;
+        const focusable = panel.querySelectorAll('a[href], button:not([disabled]), input');
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (!first) return;
+        if (e.shiftKey && document.activeElement === first) (e.preventDefault(), last.focus());
+        else if (!e.shiftKey && document.activeElement === last) (e.preventDefault(), first.focus());
+      };
+      backdrop.addEventListener('click', (e) => e.target === backdrop && closeSheet());
+      closeCurrentSheet = () => {
+        document.removeEventListener('keydown', onKey);
+        document.body.classList.remove('sheet-open');
+        backdrop.remove();
+        closeCurrentSheet = null;
+        if (opener && opener.isConnected && opener.focus) opener.focus();
+      };
+      document.addEventListener('keydown', onKey);
+      document.body.classList.add('sheet-open');
+      document.body.append(backdrop);
+      panel.focus();
+    }
+
+    // ─────────────────────────── Экраны ───────────────────────────
+
+    function tile(data, slot) {
+      const items = itemsInSlot(data.items, slot);
+      const name = blockName(data, slot);
+      const cover = sortItems(items)[0];
+      const named = data.blocks.some((b) => b.slot === slot && b.name);
+      return h(
+        'a',
+        { class: cover ? 'tile' : 'tile tile-empty', href: '#/block/' + slot, 'aria-label': name + ': ' + countLabel(items.length) },
+        cover ? photo(thumbUrl(cover.id, 400), '', 'tile-photo') : null,
+        h('span', { class: named ? 'tile-name' : 'tile-name tile-name-muted' }, name),
+        h('span', { class: 'tile-count' }, items.length ? countLabel(items.length) : 'пусто'),
+        cover ? tierBar(summarize(items), true) : null,
+      );
+    }
+
+    function homeScreen(data) {
+      const unsorted = itemsInSlot(data.items, UNSORTED).length;
+      return h(
+        'div',
+        { class: 'page' },
+        header('Гардероб', null, h('button', { type: 'button', class: 'btn btn-ghost', onclick: () => openRename(data.blocks) }, 'Переименовать')),
+        summaryCard(data.items, 'Итого'),
+        data.warnings.length ? h('p', { class: 'notice', role: 'status' }, data.warnings.join(' · ')) : null,
+        h('nav', { class: 'grid', 'aria-label': 'Блоки' }, ...Array.from({ length: SLOTS }, (_, i) => tile(data, i + 1))),
+        unsorted ? h('a', { class: 'unsorted', href: '#/block/' + UNSORTED }, h('span', {}, 'Без блока'), h('span', {}, countLabel(unsorted) + ' ›')) : null,
+      );
+    }
+
+    function addButton(data, slot) {
+      if (slot === UNSORTED) return null;
+      const block = data.blocks.find((b) => b.slot === slot);
+      const href = addUrl(data.formUrl, data.blockEntry, block ? block.name : '');
+      if (!href) return h('button', { type: 'button', class: 'btn btn-primary btn-block', disabled: true, title: 'Форма не подключена — запустите setup' }, '+ Добавить вещь');
+      // Ссылка, а не window.open: из iframe Apps Script iOS Safari считает window.open всплывающим окном.
+      return h('a', { class: 'btn btn-primary btn-block', href: href, target: '_blank', rel: 'noopener noreferrer' }, '+ Добавить вещь');
+    }
+
+    function card(item) {
+      const label = item.name || formatDate(item.addedAt);
+      return h(
+        'button',
+        { type: 'button', class: 'card', onclick: () => openItem(item), 'aria-label': label + ', ' + (item.tier ? 'тир ' + item.tier : 'без тира') },
+        h('span', { class: 'card-photo-wrap' }, photo(thumbUrl(item.id, 400), '', 'card-photo'), tierPill(item.tier)),
+        h('span', { class: item.name ? 'card-name' : 'card-name card-name-muted' }, label),
+      );
+    }
+
+    function blockScreen(data, slot) {
+      const items = sortItems(itemsInSlot(data.items, slot));
+      return h(
+        'div',
+        { class: 'page' },
+        header(blockName(data, slot), '#/'),
+        summaryCard(items, 'Итого в блоке', addButton(data, slot)),
+        items.length
+          ? h('div', { class: 'cards' }, ...items.map(card))
+          : h('p', { class: 'empty' }, slot === UNSORTED ? 'Все вещи разложены по блокам.' : 'Пока пусто — добавьте вещь через форму.'),
+      );
+    }
+
+    function openItem(item) {
+      const tierButton = (tier) =>
+        h(
+          'button',
+          {
+            type: 'button',
+            class: 'tier-btn tier-' + (tier || 'none'),
+            'aria-pressed': String(item.tier === tier),
+            'aria-label': tier ? 'Тир ' + tier : 'Без тира',
+            onclick: () => {
+              closeSheet();
+              if (tier !== item.tier) setTier(item, tier);
+            },
+          },
+          tier || '—',
+        );
+      openSheet(
+        item.name || 'Вещь',
+        photo(thumbUrl(item.id, 1000), item.name, 'sheet-photo'),
+        h('p', { class: 'sheet-title' }, item.name || 'Без названия'),
+        h('p', { class: 'sheet-meta' }, item.size ? h('span', {}, 'Размер ' + item.size) : null, h('span', {}, 'добавлено ' + formatDate(item.addedAt))),
+        h('div', { class: 'tier-row', role: 'group', 'aria-label': 'Тир' }, ...TIERS.map(tierButton), tierButton(null)),
+        h('button', { type: 'button', class: 'btn btn-danger btn-block', onclick: () => (closeSheet(), remove(item)) }, 'Удалить'),
+      );
+    }
+
+    function openRename(blocks) {
+      const inputs = Array.from({ length: SLOTS }, (_, i) => {
+        const block = blocks.find((b) => b.slot === i + 1);
+        return h('input', { type: 'text', class: 'field', id: 'block-' + (i + 1), maxlength: MAX_NAME, placeholder: 'Блок ' + (i + 1), 'aria-label': 'Название блока ' + (i + 1), value: block ? block.name : '', autocomplete: 'off' });
+      });
+      const error = h('p', { class: 'form-error', role: 'alert' });
+      const submit = h('button', { type: 'submit', class: 'btn btn-primary btn-block' }, 'Сохранить');
+      const form = h(
+        'form',
+        { class: 'rename' },
+        h('p', { class: 'sheet-title' }, 'Названия блоков'),
+        h('p', { class: 'hint' }, 'Порядок — слева направо, сверху вниз. Старые названия продолжают работать для прежних ответов формы.'),
+        h('div', { class: 'rename-grid' }, ...inputs.map((input, i) => h('label', { class: 'rename-cell', for: 'block-' + (i + 1) }, h('span', {}, String(i + 1)), input))),
+        error,
+        submit,
+      );
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        submit.disabled = true;
+        error.textContent = '';
+        try {
+          await rename(inputs.map((input) => input.value.trim()));
+          closeSheet();
+        } catch (err) {
+          error.textContent = err.message;
+          submit.disabled = false;
+        }
+      });
+      openSheet('Переименовать блоки', form);
+    }
+
+    function skeleton() {
+      return h(
+        'div',
+        { class: 'page', 'aria-busy': 'true' },
+        h('header', { class: 'app-header' }, h('h1', { class: 'header-title' }, 'Гардероб')),
+        h('div', { class: 'summary skeleton' }),
+        h('div', { class: 'grid' }, ...Array.from({ length: SLOTS }, () => h('div', { class: 'tile skeleton' }))),
+      );
+    }
+
+    function errorScreen(message) {
+      return h(
+        'div',
+        { class: 'page error-screen', role: 'alert' },
+        h('h1', { class: 'header-title' }, 'Не удалось загрузить гардероб'),
+        h('p', {}, message),
+        h('button', { type: 'button', class: 'btn btn-primary', onclick: () => load(false) }, 'Повторить'),
+        h('p', { class: 'hint' }, 'Если страница не грузится, откройте её в профиле браузера, где выполнен вход только в аккаунт владельца.'),
+      );
+    }
+
+    // ─────────────────────────── Состояние приложения ───────────────────────────
+
+    const root = document.getElementById('app');
+    let view = { kind: 'loading' };
+    /** Вещи, скрытые на время «Отменить»; фоновая перезагрузка не должна их вернуть. */
+    let pendingDeletes = new Set();
+
+    function render() {
+      root.replaceChildren();
+      if (view.kind === 'loading') return root.append(skeleton());
+      if (view.kind === 'error') return root.append(errorScreen(view.message));
+      const m = /^#\/block\/(\d)$/.exec(location.hash);
+      root.append(m ? blockScreen(view.data, Number(m[1])) : homeScreen(view.data));
+    }
+
+    /** Данные не мутируются: каждое изменение создаёт новый объект и перерисовывает экран. */
+    function update(change) {
+      if (view.kind !== 'ready') return;
+      view = { kind: 'ready', data: change(view.data) };
+      render();
+    }
+
+    const withTier = (id, tier) => (d) => Object.assign({}, d, { items: d.items.map((i) => (i.id === id ? Object.assign({}, i, { tier: tier }) : i)) });
+    const without = (ids) => (d) => Object.assign({}, d, { items: d.items.filter((i) => !ids.has(i.id)) });
+
+    async function load(silent) {
+      if (!silent) {
+        view = { kind: 'loading' };
+        render();
+      }
+      try {
+        view = { kind: 'ready', data: without(pendingDeletes)(await call('getData')) };
+      } catch (e) {
+        if (silent && view.kind === 'ready') return;
+        view = { kind: 'error', message: e.message };
+      }
+      render();
+    }
+
+    async function setTier(item, tier) {
+      update(withTier(item.id, tier));
+      try {
+        await call('setTier', { itemId: item.id, tier: tier });
+      } catch (e) {
+        update(withTier(item.id, item.tier));
+        toast('Тир не сохранён: ' + e.message, 'error');
+      }
+    }
+
+    function remove(item) {
+      const forget = () => (pendingDeletes = new Set(Array.from(pendingDeletes).filter((id) => id !== item.id)));
+      const restore = () => {
+        forget();
+        update((d) => (d.items.some((i) => i.id === item.id) ? d : Object.assign({}, d, { items: d.items.concat([item]) })));
+      };
+      pendingDeletes = new Set(Array.from(pendingDeletes).concat([item.id]));
+      update(without(new Set([item.id])));
+      const timer = setTimeout(async () => {
+        try {
+          const res = await call('deleteItem', { itemId: item.id });
+          forget();
+          if (res.warning) toast(res.warning, 'error');
+        } catch (e) {
+          restore();
+          toast('Не удалено: ' + e.message, 'error');
+        }
+      }, UNDO_MS);
+      toast('Вещь удалена', 'info', { label: 'Отменить', run: () => (clearTimeout(timer), restore()) }, UNDO_MS);
+    }
+
+    async function rename(names) {
+      const blocks = await call('renameBlocks', { names: names });
+      update((d) => Object.assign({}, d, { blocks: blocks }));
+      toast('Названия сохранены');
+      load(true);
+    }
+
+    window.addEventListener('hashchange', () => {
+      closeSheet();
+      render();
+      window.scrollTo(0, 0);
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && view.kind === 'ready') load(true);
+    });
+    load(false);
+  </script>
+</body>
+</html>
