@@ -372,6 +372,9 @@
       color: var(--muted);
       font-weight: 400;
     }
+    .card-name + .card-name {
+      margin-top: -4px;
+    }
     .tier-pill {
       position: absolute;
       top: 8px;
@@ -466,6 +469,7 @@
       overflow: hidden;
     }
     .sheet-meta {
+      flex-wrap: wrap;
       display: flex;
       gap: 8px;
       color: var(--muted);
@@ -876,12 +880,15 @@
     }
 
     function card(item) {
-      const label = item.name || formatDate(item.addedAt);
+      const title = item.name || item.brand;
+      const label = title || formatDate(item.addedAt);
+      const brandLine = item.name && item.brand ? item.brand : null;
       return h(
         'button',
-        { type: 'button', class: 'card', onclick: () => openItem(item), 'aria-label': label + ', ' + (item.tier ? 'тир ' + item.tier : 'без тира') },
+        { type: 'button', class: 'card', onclick: () => openItem(item), 'aria-label': [label, brandLine, item.tier ? 'тир ' + item.tier : 'без тира'].filter(Boolean).join(', ') },
         h('span', { class: 'card-photo-wrap' }, photo(thumbUrl(item.id, 400), '', 'card-photo'), tierPill(item.tier)),
-        h('span', { class: item.name ? 'card-name' : 'card-name card-name-muted' }, label),
+        h('span', { class: title ? 'card-name' : 'card-name card-name-muted' }, label),
+        brandLine ? h('span', { class: 'card-name card-name-muted' }, brandLine) : null,
       );
     }
 
@@ -917,8 +924,14 @@
       openSheet(
         item.name || 'Вещь',
         photo(thumbUrl(item.id, 1000), item.name, 'sheet-photo'),
-        h('p', { class: 'sheet-title' }, item.name || 'Без названия'),
-        h('p', { class: 'sheet-meta' }, item.size ? h('span', {}, 'Размер ' + item.size) : null, h('span', {}, 'добавлено ' + formatDate(item.addedAt))),
+        h('p', { class: 'sheet-title' }, item.name || item.brand || 'Без названия'),
+        h(
+          'p',
+          { class: 'sheet-meta' },
+          item.name && item.brand ? h('span', {}, item.brand) : null,
+          item.size ? h('span', {}, 'Размер ' + item.size) : null,
+          h('span', {}, 'добавлено ' + formatDate(item.addedAt)),
+        ),
         h('div', { class: 'tier-row', role: 'group', 'aria-label': 'Тир' }, ...TIERS.map(tierButton), tierButton(null)),
         h('button', { type: 'button', class: 'btn btn-danger btn-block', onclick: () => (closeSheet(), remove(item)) }, 'Удалить'),
       );

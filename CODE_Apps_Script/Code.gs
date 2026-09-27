@@ -26,6 +26,7 @@ const COLUMNS = {
   photo: ['Фото', 'Photo'],
   name: ['Название', 'Name'],
   size: ['Размер', 'Size'],
+  brand: ['Бренд', 'Brand'],
   tier: ['Тир', 'Tier'],
 };
 const PROP = {
@@ -167,6 +168,7 @@ function buildCatalog_(responses, blocks, state) {
       slot: slotByName.has(norm_(row[col.block])) ? slotByName.get(norm_(row[col.block])) : null,
       name: cell(row, col.name),
       size: cell(row, col.size),
+      brand: cell(row, col.brand),
       tier: saved && saved.tier !== undefined ? saved.tier : asTier_(cell(row, col.tier)),
       addedAt: text_(row[0]),
     });
@@ -356,7 +358,7 @@ function readResponses_(ss) {
 function columns_(headers) {
   const titles = headers.map(norm_);
   const find = (key) => titles.findIndex((t) => COLUMNS[key].some((c) => norm_(c) === t));
-  return { block: find('block'), photo: find('photo'), name: find('name'), size: find('size'), tier: find('tier') };
+  return { block: find('block'), photo: find('photo'), name: find('name'), size: find('size'), brand: find('brand'), tier: find('tier') };
 }
 
 function hasRequiredColumns_(headers) {
